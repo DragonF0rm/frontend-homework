@@ -25,4 +25,13 @@ QUnit.module('Проверка работы функции filter', function () 
 		assert.strictEqual(filter(`<script>alert('1');</script>`, [ 'strong', 'em' ]), '&lt;script&gt;alert(&#39;1&#39;);&lt;/script&gt;');
 		assert.strictEqual(filter(`<img src="bad" onerror="alert('1');">`, [ 'strong', 'em' ]), '&lt;img src=&quot;bad&quot; onerror=&quot;alert(&#39;1&#39;);&quot;&gt;');
 	});
+
+	QUnit.test('filter корректно работает с последовательностями валидных и XSS тэгов', function (assert) {
+		assert.strictEqual(filter(`<div class="mx-1"><img src="dangerous"></div>`, [ 'strong', 'em' ]),
+					  '<div class="mx-1">&lt;img src=&quot;dangerous&quot;&gt;</div>');
+		assert.strictEqual(filter(`<script>document.body.append('<h1>Hello, world!</h1>');</script>`, [ 'strong', 'em' ]),
+					  '&lt;script&gt;document.body.append(&#39;<h1>Hello, world!</h1>&#39;);&lt;/script&gt;');
+		assert.strictEqual(filter(`<div onmouseover="alert('1');"><span>JavaScript <> Java</span></div>`, [ 'strong', 'em' ]),
+					  '&lt;div onmouseover=&quot;alert(&#39;1&#39;);&quot;&gt;<span>JavaScript &lt;&gt; Java</span>&lt;/div&gt;');
+	});
 });
