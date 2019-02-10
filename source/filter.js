@@ -1,5 +1,9 @@
 'use strict'
 
+//ВАРИАНТ 15
+//Задание: Напишите функцию filter, которая фильтрует html-код, оставляя только разрешённые html-теги
+//Задачу решил Уймин М.С.
+
 function filter (html) {
 	const regexp = /<\/?\w+(\s*\w+=(\w+|"[^"]*")\s*)*>/g;//Регулярка, выбирающая тэги
 	const ValueType = Object.freeze({ text: 1,
