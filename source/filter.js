@@ -49,10 +49,9 @@ function filter (html) {
 			      value: html.substring(cursor) });
 	}
 
-	let result = '';
-	parsed.forEach(item => {
+	return parsed.reduce((str, item) => {
 		if (item.type === ValueType.text) {
-			result += esc(item.value);
+			return str + esc(item.value);
 		} else {
 			if (item.type === ValueType.opening_tag && is_xss(item.value)) {
 				//Экранируем пару XSS тэгов
@@ -61,10 +60,9 @@ function filter (html) {
 					parsed[item.closed].value = esc(parsed[item.closed].value);
 				}
 			}
-			result += item.value;
+			return str + item.value;
 		}
-	});
-	return result;
+	}, '');
 }
 
 function esc (str) {
