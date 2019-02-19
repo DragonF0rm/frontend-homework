@@ -7,8 +7,8 @@
 function filter (html) {
 	const regexp = /<\/?\w+(\s*\w+=(\w+|"[^"]*")\s*)*>/g;//Регулярка, выбирающая тэги
 	const ValueType = Object.freeze({ text: 1,
-					  opening_tag: 2,
-					  closing_tag: 3 });//Возможные типы нод в html
+					  openingTag: 2,
+					  closingTag: 3 });//Возможные типы нод в html
 	let parsed = [];
 	let cursor = 0;
 	let tag = regexp.exec(html);
@@ -20,11 +20,11 @@ function filter (html) {
 		}
 		if (tag[0].charAt(1) === '/') {
 			//По регулярке нашли закрывающий тэг
-			parsed.push({ type: ValueType.closing_tag,
+			parsed.push({ type: ValueType.closingTag,
 				      value: tag[0],
 				      name: tag[0].match(/<\/\w+/)[0].slice(2,-1)});
 			for (let i=parsed.length-1; i>=0; i--) {
-				if (parsed[i].type === ValueType.opening_tag &&
+				if (parsed[i].type === ValueType.openingTag &&
 				    parsed[i].name === parsed[parsed.length-1].name &&
 				    parsed[i].closed === null) {
 					//Полагая, что тэги расположены в корректном порядке,
@@ -35,7 +35,7 @@ function filter (html) {
 			}
 		} else {
 			//По регулярке нашли открывающий тэг
-			parsed.push({ type: ValueType.opening_tag,
+			parsed.push({ type: ValueType.openingTag,
 				      value: tag[0],
 				      name: tag[0].match(/<\w+/)[0].slice(1,-1),
 				      closed: null });
@@ -53,7 +53,7 @@ function filter (html) {
 		if (item.type === ValueType.text) {
 			return str + esc(item.value);
 		} else {
-			if (item.type === ValueType.opening_tag && is_xss(item.value)) {
+			if (item.type === ValueType.openingTag && isXSS(item.value)) {
 				//Экранируем пару XSS тэгов
 				item.value = esc(item.value);
 				if (item.closed !== null) {
@@ -79,10 +79,10 @@ function esc (str) {
 	});
 }
 
-function is_xss (tag) {
-	let tag_name = tag.match(/<\w+/)[0].slice(1);
-	const xss_tags = ['script'];
-	if (xss_tags.includes(tag_name)) {
+function isXSS (tag) {
+	let tagName = tag.match(/<\w+/)[0].slice(1);
+	const xssTags = ['script'];
+	if (xssTags.includes(tagName)) {
 		return true;
 	}
 	let attrs = tag.match(/\w+=/g);
@@ -93,14 +93,14 @@ function is_xss (tag) {
 	attrs = attrs.map(elem => {
 		return elem.slice(0,-1);
 	});
-	const xss_attrs = ['value', 'href', 'src', 'style', 'onblur', 'onchange', 'onclick', 'ondbclick',
+	const xssAttrs = ['value', 'href', 'src', 'style', 'onblur', 'onchange', 'onclick', 'ondbclick',
 		'onfocus', 'onkeydown', 'onkeypress', 'onkeyup', 'onload', 'onmousedown','onmousemove', 'onmouseout',
 			'onmouseover', 'onmouseup', 'onreset', 'onselect', 'onsubmit'];
-	let has_xss_attr = false;
+	let hasXSSAttr = false;
 	attrs.forEach(item => {
-		if (xss_attrs.includes(item)) {
-			has_xss_attr = true;
+		if (xssAttrs.includes(item)) {
+			hasXSSAttr = true;
 		}
 	});
-	return has_xss_attr;
+	return hasXSSAttr;
 }
