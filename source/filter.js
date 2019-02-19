@@ -96,11 +96,7 @@ function isXSS (tag) {
 	const xssAttrs = ['value', 'href', 'src', 'style', 'onblur', 'onchange', 'onclick', 'ondbclick',
 		'onfocus', 'onkeydown', 'onkeypress', 'onkeyup', 'onload', 'onmousedown','onmousemove', 'onmouseout',
 			'onmouseover', 'onmouseup', 'onreset', 'onselect', 'onsubmit'];
-	let hasXSSAttr = false;
-	attrs.forEach(item => {
-		if (xssAttrs.includes(item)) {
-			hasXSSAttr = true;
-		}
+	return attrs.some(item => {
+		return xssAttrs.includes(item);
 	});
-	return hasXSSAttr;
 }
