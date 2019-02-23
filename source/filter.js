@@ -4,6 +4,13 @@
 //Задание: Напишите функцию filter, которая фильтрует html-код, оставляя только разрешённые html-теги
 //Задачу решил Уймин М.С.
 
+/** Экранирует символы, которые могут вызывать XSS уязвимость.
+ * При этом функция разбирает весь html документ на тэги и текст внутри них и экранирует только текст и те тэги, которые могут привести к уязвимости.
+ * @function filter
+ * @param {string} html Текст на языке html
+ * @returns {string} Тот же текст, но с экранированными спец. символами
+ * @author Уймин Максим
+ */
 function filter (html) {
 	const regexp = /<\/?\w+(\s*\w+=(\w+|"[^"]*")\s*)*>/g;//Регулярка, выбирающая тэги
 	const ValueType = Object.freeze({ text: 1,
@@ -65,6 +72,13 @@ function filter (html) {
 	}, '');
 }
 
+/** Экранирует все спецсимволы в строчке
+ * @function esc
+ * @param {string} str Строка, потенциально содержащая спец. символы
+ * @returns {string} Та же строка, но с экранированными спец. символам
+ * @author Уймин Максим
+ */
+
 function esc (str) {
 	const htmlEscapes = {
         	'&': '&amp;',
@@ -78,6 +92,13 @@ function esc (str) {
 		return htmlEscapes[match];
 	});
 }
+
+/** Экранирует все спецсимволы в строчке
+ * @function isXSS
+ * @param {string}tag Строка, являющаяся html-тэгом, например <span class="msg">
+ * @returns {boolean} Булево значение, означающее, что тэг, поданный на вход, содержит либо не содержит XSS уязвимость
+ * @author Уймин Максим
+ */
 
 function isXSS (tag) {
 	let tagName = tag.match(/<\w+/)[0].slice(1);
